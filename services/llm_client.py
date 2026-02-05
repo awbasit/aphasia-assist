@@ -1,3 +1,4 @@
+import json
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -34,3 +35,20 @@ class LLMClient:
         except Exception as e:
             logger.exception("LLM call failed")
             raise LLMError(str(e))
+        
+    def suggest_sentences(self, system_prompt, user_input, tool_schema):
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_input}
+        ]
+
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            tools=[tool_schema],
+            tool_choice={"type": "function", "function": {"name": "suggest_sentences"}}
+        )
+
+        tool_args = response.choices[0].message.tool_calls[0].function.arguments
+        parsed_args = json.loads(tool_args)
+        return parsed_args

@@ -2,3 +2,5 @@
 venv
 logs/
 __pycache__
+experiments/prompt-test.ipynb
+docs/sprints.md
